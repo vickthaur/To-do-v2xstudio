@@ -3,420 +3,630 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>V2X — Compte Client (To-do, Livrables, Dossiers, Agenda)</title>
+<title>V2X — Compte Client PRO</title>
 <meta name="theme-color" content="#0a4466">
 <style>
-  /* ===== Design system inspiré de V2X (dark + bleu) ===== */
+/* ===== Hyper-modern UI (glass + motion) ===== */
+:root{
+  --bg:#0a0d14;
+  --bg-2:#0b1020;
+  --ink:#eaf2ff;
+  --muted:#a7b3c9;
+  --panel:rgba(14,18,28,.7);
+  --bd:rgba(255,255,255,.1);
+  --brand:#3aa0ff;
+  --brand-2:#6bc2ff;
+  --success:#16a34a;
+  --warn:#f59e0b;
+  --danger:#ef4444;
+  --r:18px;
+  --shadow:0 20px 80px rgba(0,0,0,.45);
+  --blur:12px;
+}
+@media (prefers-color-scheme: light){
   :root{
-    --bg:#0b0c0f;
-    --ink:#f2f6fe;
-    --muted:#9fb0c6;
-    --panel:#0f1420;
-    --bd:#1b2434;
-    --brand:#0a4466;
-    --brand-2:#136e99;
-    --r:16px;
-    --shadow:0 20px 60px rgba(0,0,0,.35);
+    --bg:#f3f6fb; --bg-2:#e9eef6; --ink:#0f172a; --muted:#526079;
+    --panel:rgba(255,255,255,.7); --bd:rgba(0,0,0,.08);
   }
-  *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,Inter,Segoe UI,Arial,sans-serif}
-  a{color:#b9ddff}
-  .wrap{max-width:1100px;margin:0 auto;padding:22px}
-  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-  .brand{font-weight:700;letter-spacing:.3px}
-  .muted{color:var(--muted)}
-  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-  .tab{background:#0f1624;border:1px solid var(--bd);padding:8px 12px;border-radius:10px;cursor:pointer}
-  .tab[aria-selected="true"]{outline:2px solid var(--brand)}
-  .panel{background:var(--panel);border:1px solid var(--bd);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  @media (max-width:900px){.grid{grid-template-columns:1fr}}
-  input[type="text"], input[type="url"], input[type="date"], input[type="time"], textarea, select{
-    width:100%;padding:10px 12px;background:#0c121b;border:1px solid var(--bd);border-radius:10px;color:var(--ink)
-  }
-  button, .btn{
-    background:var(--brand);color:#fff;border:none;border-radius:10px;padding:9px 12px;cursor:pointer
-  }
-  button.secondary{background:#0f1624;color:var(--ink);border:1px solid var(--bd)}
-  .list{list-style:none;margin:0;padding:0}
-  .item{display:flex;align-items:center;justify-content:space-between;border-bottom:1px dashed var(--bd);padding:8px 0;gap:8px}
-  .actions{display:flex;gap:6px;align-items:center}
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-  .kpi{background:#0f1420;border:1px solid var(--bd);border-radius:12px;padding:10px;text-align:center}
-  .kpi h3{margin:0}
-  .pill{border:1px solid var(--bd);border-radius:999px;padding:2px 8px;font-size:12px;color:var(--muted)}
-  .row{display:flex;gap:10px;align-items:center}
-  .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px}
-  .cal-head{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
-  .day{background:#0f1624;border:1px solid var(--bd);border-radius:10px;min-height:90px;padding:6px;display:flex;flex-direction:column;gap:4px}
-  .day header{display:flex;justify-content:space-between;align-items:center;margin:0 0 4px 0}
-  .tag{display:inline-block;background:rgba(10,68,102,.25);border:1px solid var(--brand);border-radius:8px;padding:2px 6px;font-size:12px}
-  .toolbar{display:flex;gap:6px;flex-wrap:wrap}
-  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
-  .notice{padding:10px;border:1px solid var(--bd);background:#0f1624;border-radius:10px}
+}
+*{box-sizing:border-box}
+html,body{margin:0;font:15.5px/1.65 Inter,system-ui,Segoe UI,Arial,sans-serif;background:radial-gradient(1200px 800px at 10% -10%, #103459 0%, transparent 50%),linear-gradient(180deg,var(--bg),var(--bg-2));color:var(--ink)}
+a{color:var(--brand)}
+.container{max-width:1200px;margin:0 auto;padding:24px}
+header.top{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.brand{display:flex;gap:10px;align-items:center}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow:0 10px 30px rgba(58,160,255,.35)}
+.kbar{display:flex;gap:8px;align-items:center}
+input[type="text"], input[type="url"], input[type="date"], input[type="time"], input[type="number"], textarea, select{
+  width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--bd);background:rgba(16,22,34,.55);backdrop-filter: blur(8px);color:var(--ink);outline:none;
+}
+::placeholder{color:var(--muted)}
+button, .btn{background:linear-gradient(180deg,var(--brand),#167ad6);color:#fff;border:none;border-radius:12px;padding:10px 14px;cursor:pointer;box-shadow:0 8px 22px rgba(58,160,255,.25);transition:transform .08s ease}
+button:hover{transform:translateY(-1px)}
+button.secondary{background:rgba(16,22,34,.55);color:var(--ink);border:1px solid var(--bd);box-shadow:none}
+button.ghost{background:transparent;border:1px dashed var(--bd);color:var(--muted)}
+.badge{display:inline-block;border:1px solid var(--bd);border-radius:999px;padding:2px 8px;color:var(--muted);font-size:12px}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:var(--r);box-shadow:var(--shadow);backdrop-filter: blur(var(--blur));}
+.panel > .hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bd)}
+.panel > .body{padding:16px}
+.grid{display:grid;gap:14px}
+.grid-2{grid-template-columns:1.2fr .8fr}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:980px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{padding:14px;border-right:1px solid var(--bd)}
+.kpi:last-child{border-right:none}
+.kpi h3{margin:0}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#themeToggle{width:40px;height:40px;border-radius:12px;display:grid;place-items:center}
+/* Lists / Kanban */
+.list{list-style:none;margin:0;padding:0}
+.item{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;border-bottom:1px dashed var(--bd);padding:10px 0}
+.item .meta{font-size:12px;color:var(--muted)}
+.pill{border:1px solid var(--bd);border-radius:999px;padding:2px 8px;font-size:12px}
+.pill.warn{background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.35)}
+.pill.danger{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.35)}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{background:rgba(58,160,255,.18);border:1px solid rgba(58,160,255,.35);padding:2px 8px;border-radius:999px;font-size:12px}
+.tag input{width:90px;background:transparent;border:none;color:inherit}
+.actions{display:flex;gap:6px}
+/* Kanban */
+.kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.column{min-height:220px}
+.column .col-title{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--bd)}
+.droppable{min-height:160px;padding:10px}
+.card{background:rgba(16,22,34,.55);border:1px solid var(--bd);border-radius:12px;padding:10px;margin:8px 0;cursor:grab}
+.card:active{cursor:grabbing}
+/* Calendar */
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px;padding:10px}
+.cal-head{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;padding:0 10px;color:var(--muted)}
+.day{background:rgba(16,22,34,.55);border:1px solid var(--bd);border-radius:12px;min-height:100px;padding:6px;display:flex;flex-direction:column;gap:6px;position:relative}
+.day header{display:flex;justify-content:space-between;align-items:center;margin:0 0 4px 0}
+.day.today{outline:2px solid var(--brand)}
+.event{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--bd);border-radius:10px;padding:2px 6px;font-size:12px}
+/* Command palette */
+dialog.modal{border:none;border-radius:16px;max-width:680px;width:90vw;background:var(--panel);backdrop-filter: blur(14px);box-shadow:var(--shadow);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+.searchbar{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--bd)}
+.searchbar input{flex:1}
+.cmds{max-height:50vh;overflow:auto;padding:8px 12px}
+.cmd{padding:10px;border-bottom:1px solid var(--bd);cursor:pointer}
+kbd{background:rgba(16,22,34,.65);border:1px solid var(--bd);border-radius:6px;padding:1px 6px;font-size:12px;color:var(--muted)}
+/* Small helpers */
+.row{display:flex;gap:10px;align-items:center}
+.right{margin-left:auto}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand">V2X — Compte Client</div>
-      <div class="row">
-        <label class="sr-only" for="proEmail">Email pro</label>
-        <input id="proEmail" type="text" placeholder="email pro (ex: contact@tondomaine.fr)" style="max-width:280px">
-        <button id="saveEmail" class="secondary">Enregistrer</button>
-        <button id="mailtoBtn" title="Écrire un email">✉️</button>
+  <div class="container">
+    <header class="top">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <strong>V2X — Compte Client PRO</strong><br>
+          <span class="badge">Autosave • Offline-ready</span>
+        </div>
+      </div>
+      <div class="kbar">
+        <input id="globalSearch" type="text" placeholder="Rechercher (⌘/Ctrl K)">
+        <button id="openCmd" class="secondary">⌘K</button>
+        <button id="themeToggle" class="secondary" title="Basculer thème">🌓</button>
       </div>
     </header>
 
-    <div class="kpis">
-      <div class="kpi"><h3 id="kTodo">0</h3><p class="muted">Tâches</p></div>
-      <div class="kpi"><h3 id="kDue">0</h3><p class="muted">Échéances à venir</p></div>
-      <div class="kpi"><h3 id="kFiles">0</h3><p class="muted">Dossiers / Liens</p></div>
-      <div class="kpi"><h3 id="kEvents">0</h3><p class="muted">Événements</p></div>
-    </div>
-
-    <nav class="tabs" role="tablist" aria-label="Sections">
-      <button class="tab" role="tab" aria-controls="todo" aria-selected="true">✅ To‑do</button>
-      <button class="tab" role="tab" aria-controls="livrables">📦 Livrables</button>
-      <button class="tab" role="tab" aria-controls="dossiers">🗂️ Dossiers</button>
-      <button class="tab" role="tab" aria-controls="agenda">📅 Agenda</button>
-      <button class="tab" role="tab" aria-controls="export">⬇️ Export / ⬆️ Import</button>
-      <span class="pill">Sauvegarde auto</span>
-    </nav>
-
-    <!-- To-do -->
-    <section id="todo" role="tabpanel" class="panel">
-      <div class="grid">
-        <div>
-          <h2>Ajouter une tâche</h2>
-          <label>Titre<input id="todoTitle" type="text" placeholder="Ex: Créer la page d'accueil"></label>
-          <div class="grid" style="grid-template-columns:1fr 1fr">
-            <label>Échéance<input id="todoDate" type="date"></label>
-            <label>Priorité
-              <select id="todoPrio">
-                <option value="normal">Normale</option>
-                <option value="haute">Haute</option>
-                <option value="basse">Basse</option>
-              </select>
-            </label>
-          </div>
-          <label>Notes<textarea id="todoNotes" rows="3" placeholder="Détails, points bloquants…"></textarea></label>
-          <button id="addTodo">Ajouter</button>
+    <!-- KPIs -->
+    <section class="panel">
+      <div class="hdr">
+        <div class="toolbar">
+          <span class="badge">Synthèse</span>
+          <span class="badge" id="userEmail"></span>
         </div>
-        <div>
-          <h2>Liste des tâches</h2>
+        <div class="toolbar">
+          <input id="emailInput" type="text" placeholder="email pro (ex: contact@domaine.fr)" style="max-width:280px">
+          <button id="saveEmail" class="secondary">Enregistrer</button>
+          <button id="mailtoBtn" title="Écrire un email">✉️</button>
+        </div>
+      </div>
+      <div class="body kpis">
+        <div class="kpi"><h3 id="kTodo">0</h3><div class="muted">Tâches</div></div>
+        <div class="kpi"><h3 id="kDue">0</h3><div class="muted">Échéances 7j</div></div>
+        <div class="kpi"><h3 id="kFiles">0</h3><div class="muted">Dossiers</div></div>
+        <div class="kpi"><h3 id="kEvents">0</h3><div class="muted">Événements</div></div>
+      </div>
+    </section>
+
+    <!-- Main grid -->
+    <div class="grid grid-2" style="margin-top:14px">
+      <!-- Left: To-do / Livrables -->
+      <section class="panel">
+        <div class="hdr">
+          <div class="toolbar">
+            <strong>✅ Tâches</strong>
+            <button id="viewList" class="secondary">Liste</button>
+            <button id="viewKanban" class="secondary">Kanban</button>
+          </div>
+          <div class="toolbar">
+            <input id="todoFilter" type="text" placeholder="Filtrer les tâches…">
+            <button id="addQuickTodo" class="ghost">+ Rapide</button>
+          </div>
+        </div>
+        <div class="body" id="todoView">
           <ul id="todoList" class="list"></ul>
         </div>
-      </div>
-    </section>
+        <div class="body" id="kanbanView" hidden>
+          <div class="kanban">
+            <div class="panel column">
+              <div class="col-title"><strong>À faire</strong><span class="badge" id="cBacklog">0</span></div>
+              <div class="droppable" data-col="backlog"></div>
+            </div>
+            <div class="panel column">
+              <div class="col-title"><strong>En cours</strong><span class="badge" id="cDoing">0</span></div>
+              <div class="droppable" data-col="doing"></div>
+            </div>
+            <div class="panel column">
+              <div class="col-title"><strong>Terminé</strong><span class="badge" id="cDone">0</span></div>
+              <div class="droppable" data-col="done"></div>
+            </div>
+          </div>
+        </div>
+        <div class="body">
+          <div class="grid grid-3">
+            <div>
+              <label>Titre<input id="todoTitle" placeholder="Créer la page d'accueil"></label>
+            </div>
+            <div>
+              <label>Échéance<input id="todoDate" type="date"></label>
+            </div>
+            <div>
+              <label>Client / Tags<input id="todoTags" placeholder="ex: ACME, urgent"></label>
+            </div>
+          </div>
+          <div class="grid grid-3" style="margin-top:8px">
+            <div>
+              <label>Priorité
+                <select id="todoPrio">
+                  <option value="normal">Normale</option>
+                  <option value="haute">Haute</option>
+                  <option value="basse">Basse</option>
+                </select>
+              </label>
+            </div>
+            <div>
+              <label>Statut
+                <select id="todoCol">
+                  <option value="backlog">À faire</option>
+                  <option value="doing">En cours</option>
+                  <option value="done">Terminé</option>
+                </select>
+              </label>
+            </div>
+            <div class="row" style="align-items:flex-end">
+              <button id="addTodo">Ajouter la tâche</button>
+              <button id="clearDone" class="secondary">Purger terminées</button>
+            </div>
+          </div>
+          <label style="margin-top:8px;display:block">Notes<textarea id="todoNotes" rows="3" placeholder="Détails, liens, blocages…"></textarea></label>
+        </div>
+      </section>
 
-    <!-- Livrables -->
-    <section id="livrables" role="tabpanel" class="panel" hidden>
+      <!-- Right: Livrables + Dossiers + Agenda mini -->
       <div class="grid">
-        <div>
-          <h2>Nouveau livrable</h2>
-          <label>Nom<input id="livName" type="text" placeholder="Ex: Maquette Figma v1"></label>
-          <label>Lien (Drive, Figma, GitHub…)<input id="livUrl" type="url" placeholder="https://..."></label>
-          <div class="grid" style="grid-template-columns:1fr 1fr">
-            <label>Date dispo<input id="livDate" type="date"></label>
-            <label>Statut
-              <select id="livStatus">
-                <option value="en cours">En cours</option>
-                <option value="à valider">À valider</option>
-                <option value="livré">Livré</option>
-              </select>
-            </label>
+        <section class="panel">
+          <div class="hdr">
+            <strong>📦 Livrables</strong>
+            <div class="toolbar">
+              <input id="livFilter" type="text" placeholder="Filtrer…">
+              <button id="addQuickLiv" class="ghost">+ Rapide</button>
+            </div>
           </div>
-          <button id="addLiv">Ajouter</button>
-        </div>
-        <div>
-          <h2>Livrables</h2>
-          <ul id="livList" class="list"></ul>
-        </div>
-      </div>
-    </section>
+          <div class="body">
+            <ul id="livList" class="list"></ul>
+            <div class="grid grid-3" style="margin-top:8px">
+              <label>Nom<input id="livName"></label>
+              <label>Lien<input id="livUrl" type="url" placeholder="https://..."></label>
+              <label>Statut
+                <select id="livStatus">
+                  <option value="en cours">En cours</option>
+                  <option value="à valider">À valider</option>
+                  <option value="livré">Livré</option>
+                </select>
+              </label>
+            </div>
+            <div class="row" style="margin-top:8px">
+              <label style="flex:1">Date<input id="livDate" type="date"></label>
+              <button id="addLiv">Ajouter</button>
+            </div>
+          </div>
+        </section>
 
-    <!-- Dossiers -->
-    <section id="dossiers" role="tabpanel" class="panel" hidden>
-      <div class="grid">
-        <div>
-          <h2>Ajouter un dossier</h2>
-          <label>Intitulé<input id="dosName" type="text" placeholder="Ex: Dossier client ACME"></label>
-          <label>URL dossier (Drive/Notion/GitHub…)<input id="dosUrl" type="url" placeholder="https://..."></label>
-          <button id="addDos">Ajouter</button>
-        </div>
-        <div>
-          <h2>Mes dossiers</h2>
-          <ul id="dosList" class="list"></ul>
-        </div>
-      </div>
-      <p class="notice">Astuce : crée un dossier Drive par client et colle ici le lien. Tout est consultable depuis un seul endroit.</p>
-    </section>
+        <section class="panel">
+          <div class="hdr">
+            <strong>🗂️ Dossiers</strong>
+            <div class="toolbar">
+              <input id="dosFilter" type="text" placeholder="Filtrer…">
+              <button id="addQuickDos" class="ghost">+ Rapide</button>
+            </div>
+          </div>
+          <div class="body">
+            <ul id="dosList" class="list"></ul>
+            <div class="grid grid-3" style="margin-top:8px">
+              <label>Nom<input id="dosName"></label>
+              <label>URL<input id="dosUrl" type="url" placeholder="https://..."></label>
+              <div class="row" style="align-items:flex-end"><button id="addDos">Ajouter</button></div>
+            </div>
+          </div>
+        </section>
 
-    <!-- Agenda -->
-    <section id="agenda" role="tabpanel" class="panel" hidden>
-      <div class="grid">
-        <div>
-          <h2>Nouvel événement</h2>
-          <label>Titre<input id="evTitle" type="text" placeholder="Ex: Call projet"></label>
-          <div class="grid" style="grid-template-columns:1fr 1fr">
-            <label>Date<input id="evDate" type="date"></label>
-            <label>Heure<input id="evTime" type="time" value="09:00"></label>
+        <section class="panel">
+          <div class="hdr">
+            <strong>📅 Agenda</strong>
+            <div class="toolbar">
+              <button id="exportICS" class="secondary">Exporter .ics</button>
+              <button id="prevMonth" class="secondary">◀</button>
+              <span id="calLabel" class="badge"></span>
+              <button id="nextMonth" class="secondary">▶</button>
+            </div>
           </div>
-          <label>Durée (min)<input id="evDur" type="number" min="15" step="15" value="60"></label>
-          <label>Notes<textarea id="evNotes" rows="3" placeholder="Participants, lien Meet…"></textarea></label>
-          <button id="addEvent">Ajouter</button>
-          <div class="row" style="margin-top:10px">
-            <button class="secondary" id="exportICS">Exporter .ics</button>
+          <div class="body">
+            <div class="cal-head"><div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div></div>
+            <div id="calendar" class="calendar"></div>
+            <div class="grid grid-3" style="margin-top:10px">
+              <label>Titre<input id="evTitle" placeholder="Call projet"></label>
+              <label>Date<input id="evDate" type="date"></label>
+              <label>Heure<input id="evTime" type="time" value="09:00"></label>
+            </div>
+            <div class="row" style="margin-top:8px">
+              <label>Durée (min)<input id="evDur" type="number" min="15" step="15" value="60" style="max-width:120px"></label>
+              <label style="flex:1">Notes<textarea id="evNotes" rows="2" placeholder="Participants, lien Meet…"></textarea></label>
+              <button id="addEvent">Ajouter</button>
+            </div>
           </div>
-        </div>
-        <div>
-          <div class="toolbar">
-            <button id="prevMonth" class="secondary">◀</button>
-            <strong id="calLabel"></strong>
-            <button id="nextMonth" class="secondary">▶</button>
-          </div>
-          <div class="cal-head muted">
-            <div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div>
-          </div>
-          <div id="calendar" class="calendar"></div>
-        </div>
+        </section>
       </div>
-    </section>
+    </div>
 
     <!-- Export / Import -->
-    <section id="export" role="tabpanel" class="panel" hidden>
-      <h2>Export / Import des données</h2>
-      <p class="muted">Tout est enregistré automatiquement dans ton navigateur (localStorage). Tu peux aussi exporter en JSON et ré-importer plus tard, ou sur un autre ordinateur.</p>
-      <div class="row">
-        <button id="exportJSON">Exporter JSON</button>
-        <input id="importFile" type="file" accept="application/json">
+    <section class="panel" style="margin-top:14px">
+      <div class="hdr">
+        <strong>⬇️ Export / ⬆️ Import</strong>
+        <div class="toolbar">
+          <button id="exportJSON" class="secondary">Exporter JSON</button>
+          <input id="importFile" type="file" accept="application/json">
+        </div>
       </div>
-      <p class="muted">Remarque : la connexion directe à ta boîte mail pro nécessite un back-end (OAuth Gmail/Outlook). Cette version locale fournit un bouton ✉️ pour composer un email rapide à l’adresse enregistrée.</p>
+      <div class="body muted">Données stockées en local (localStorage). Pour la connexion directe à ta boîte pro, il faudra un petit back-end OAuth (je peux te le fournir).</div>
     </section>
-
   </div>
 
-<script>
-/* === Modèle de données ===
-state = {
-  email: "pro@domaine.fr",
-  todos:[{title, due, prio, notes, done, id}],
-  livrables:[{name, url, date, status, id}],
-  dossiers:[{name, url, id}],
-  events:[{title, date, time, dur, notes, id}]
-}
-*/
-const KEY = "v2x_compte_client";
-const $ = (s, el=document)=>el.querySelector(s);
-const $$ = (s, el=document)=>Array.from(el.querySelectorAll(s));
-let state = load() || {email:"", todos:[], livrables:[], dossiers:[], events:[]};
+  <!-- Command palette modal -->
+  <dialog id="cmd" class="modal">
+    <div class="searchbar">
+      <span>⌘K</span>
+      <input id="cmdInput" placeholder="Commande… (ajouter tâche, événement, aller: agenda, exporter…)">
+      <button id="closeCmd" class="secondary">✕</button>
+    </div>
+    <div id="cmdList" class="cmds"></div>
+  </dialog>
 
+<script>
+/* ===== State & utilities ===== */
+const KEY = "v2x_compte_client_pro";
+const $ = (s,el=document)=>el.querySelector(s);
+const $$ = (s,el=document)=>Array.from(el.querySelectorAll(s));
+let state = load() || {email:"", todos:[], livrables:[], dossiers:[], events:[]};
 function save(){ localStorage.setItem(KEY, JSON.stringify(state)); refreshKPIs(); }
 function load(){ try{return JSON.parse(localStorage.getItem(KEY)||"");}catch(e){return null;} }
 function uid(){ return Math.random().toString(36).slice(2,9); }
+function tagPills(str){
+  return (str||"").split(",").map(s=>s.trim()).filter(Boolean).map(t=>`<span class="tag">${t}</span>`).join(" ");
+}
+function within7d(dateStr){
+  if(!dateStr) return false;
+  const d = new Date(dateStr); const now = new Date(); const diff = (d - now)/(86400000);
+  return diff >= 0 && diff <= 7;
+}
+
+/* ===== Theme toggle ===== */
+const themeBtn = $("#themeToggle");
+themeBtn.onclick = ()=>{
+  document.documentElement.classList.toggle("light");
+};
+/* Persisted email */
+const emailInput = $("#emailInput"), userEmail=$("#userEmail");
+emailInput.value = state.email||""; userEmail.textContent = state.email||"email non défini";
+$("#saveEmail").onclick = ()=>{ state.email = emailInput.value.trim(); userEmail.textContent = state.email||"—"; save(); };
+$("#mailtoBtn").onclick = ()=>{
+  const to = state.email || "";
+  const url = "mailto:"+encodeURIComponent(to)+"?subject="+encodeURIComponent("Suivi projet / V2X")+"&body="+encodeURIComponent(summaryText());
+  location.href = url;
+};
+function summaryText(){
+  return "Bonjour,\n\n— Tâches: "+state.todos.length+"\n— Livrables: "+state.livrables.length+"\n— Événements: "+state.events.length+"\n\nCordialement,";
+}
+
+/* ===== KPIs ===== */
 function refreshKPIs(){
   $("#kTodo").textContent = state.todos.length;
-  const dueSoon = state.todos.filter(t=>t.due && new Date(t.due) >= new Date()).length;
-  $("#kDue").textContent = dueSoon;
+  $("#kDue").textContent = state.todos.filter(t=>within7d(t.due)).length;
   $("#kFiles").textContent = state.dossiers.length;
   $("#kEvents").textContent = state.events.length;
 }
+refreshKPIs();
 
-/* === Tabs === */
-const tabs = $$(".tab");
-const panels = ["todo","livrables","dossiers","agenda","export"];
-tabs.forEach((t,i)=>{
-  t.addEventListener("click", ()=>{
-    tabs.forEach(btn=>btn.setAttribute("aria-selected","false"));
-    t.setAttribute("aria-selected","true");
-    panels.forEach(id=>$("#"+id).hidden = true);
-    $("#"+t.getAttribute("aria-controls")).hidden = false;
+/* ===== Global search ===== */
+const globalSearch = $("#globalSearch");
+globalSearch.addEventListener("input", ()=>{
+  const q = globalSearch.value.toLowerCase();
+  // highlight/hide items across lists
+  $$("#todoList .item").forEach(li=>{
+    li.hidden = !li.textContent.toLowerCase().includes(q);
   });
+  $$("#livList .item").forEach(li=>{ li.hidden = !li.textContent.toLowerCase().includes(q); });
+  $$("#dosList .item").forEach(li=>{ li.hidden = !li.textContent.toLowerCase().includes(q); });
 });
 
-/* === Email / mailto === */
-const proEmail = $("#proEmail");
-const saveEmail = $("#saveEmail");
-const mailtoBtn = $("#mailtoBtn");
-proEmail.value = state.email || "";
-saveEmail.onclick = ()=>{ state.email = proEmail.value.trim(); save(); };
-mailtoBtn.onclick = ()=>{
-  const to = state.email || "";
-  const url = "mailto:"+encodeURIComponent(to)+"?subject="+encodeURIComponent("Suivi projet / V2X")+"&body="+encodeURIComponent("Bonjour,\n\n— Tâches en cours : "+state.todos.length+"\n— Prochains livrables : "+state.livrables.length+"\n— Événements : "+state.events.length+"\n\nCordialement,");
-  window.location.href = url;
-};
-
-/* === To-do === */
-const todoTitle = $("#todoTitle"), todoDate=$("#todoDate"), todoPrio=$("#todoPrio"), todoNotes=$("#todoNotes");
+/* ===== To-dos (list + kanban) ===== */
+const todoList = $("#todoList");
+const todoFilter = $("#todoFilter");
+const todoTitle=$("#todoTitle"), todoDate=$("#todoDate"), todoPrio=$("#todoPrio"), todoNotes=$("#todoNotes"), todoTags=$("#todoTags"), todoCol=$("#todoCol");
+function addTodo(obj){
+  state.todos.unshift(Object.assign({id:uid(), title:"", due:"", prio:"normal", notes:"", tags:"", col:"backlog", done:false}, obj));
+  save(); renderTodos(); renderKanban();
+}
 $("#addTodo").onclick = ()=>{
   if(!todoTitle.value.trim()) return alert("Titre requis");
-  state.todos.unshift({id:uid(), title:todoTitle.value.trim(), due:todoDate.value||"", prio:todoPrio.value, notes:todoNotes.value.trim(), done:false});
-  save(); renderTodos();
-  todoTitle.value=""; todoDate.value=""; todoPrio.value="normal"; todoNotes.value="";
+  addTodo({title:todoTitle.value.trim(), due:todoDate.value||"", prio:todoPrio.value, notes:todoNotes.value.trim(), tags:todoTags.value.trim(), col:todoCol.value, done:false});
+  todoTitle.value=""; todoDate.value=""; todoPrio.value="normal"; todoNotes.value=""; todoTags.value=""; todoCol.value="backlog";
 };
+$("#addQuickTodo").onclick = ()=>{
+  const t = prompt("Nouvelle tâche (titre, tags facultatifs entre [])", "Refaire hero [ACME, urgent]");
+  if(!t) return;
+  const m = t.match(/\[(.*)\]/);
+  const tags = m? m[1] : "";
+  const title = t.replace(/\[.*\]/,"").trim();
+  addTodo({title, tags, col:"backlog"});
+};
+
 function renderTodos(){
-  const list = $("#todoList");
-  list.innerHTML = state.todos.map(t=>`
-    <li class="item">
+  const q = (todoFilter.value||"").toLowerCase();
+  todoList.innerHTML = state.todos.map(t=>{
+    const danger = t.due && new Date(t.due) < new Date() ? "danger" : "";
+    const warn = within7d(t.due) ? "warn" : "";
+    const pr = t.prio!=="normal" ? `<span class="pill ${warn||danger}">${t.prio}</span>` : "";
+    const meta = `${t.due?("Échéance: "+t.due):"—"} · ${t.col}`;
+    return `<li class="item" data-id="${t.id}" draggable="true" ${q && !JSON.stringify(t).toLowerCase().includes(q)?'hidden':''}>
       <div style="flex:1">
-        <div class="row"><strong>${t.title}</strong>${t.prio!=="normal"?`<span class="pill">${t.prio}</span>`:""}</div>
-        <div class="muted">${t.due?("Échéance : "+t.due):"Sans échéance"}</div>
+        <div class="row"><strong>${t.done?"✅ ":""}${t.title}</strong> ${pr}</div>
+        <div class="meta">${meta}</div>
+        <div class="tags">${tagPills(t.tags)}</div>
         ${t.notes?`<div class="muted">${t.notes}</div>`:""}
       </div>
       <div class="actions">
-        <button class="secondary" data-action="toggle" data-id="${t.id}">${t.done?"✅":"⏳"}</button>
-        <button class="secondary" data-action="edit" data-id="${t.id}">✏️</button>
-        <button data-action="del" data-id="${t.id}">🗑️</button>
+        <button class="secondary" data-act="toggle">Terminer</button>
+        <button class="secondary" data-act="edit">✏️</button>
+        <button data-act="del">🗑️</button>
       </div>
-    </li>`).join("");
-  list.onclick = (e)=>{
-    const btn = e.target.closest("button"); if(!btn) return;
-    const id = btn.dataset.id, action = btn.dataset.action;
-    const idx = state.todos.findIndex(x=>x.id===id);
-    if(idx<0) return;
-    if(action==="del"){ state.todos.splice(idx,1); }
-    if(action==="toggle"){ state.todos[idx].done = !state.todos[idx].done; }
-    if(action==="edit"){
-      const t = state.todos[idx];
-      const nt = prompt("Modifier le titre", t.title); if(nt===null) return;
-      const nd = prompt("Modifier l'échéance (YYYY-MM-DD)", t.due); if(nd===null) return;
-      const nn = prompt("Modifier les notes", t.notes); if(nn===null) return;
-      t.title = nt.trim(); t.due = nd.trim(); t.notes = nn.trim();
-    }
-    save(); renderTodos();
-  };
+    </li>`;
+  }).join("");
 }
 renderTodos();
 
-/* === Livrables === */
-const livName=$("#livName"), livUrl=$("#livUrl"), livDate=$("#livDate"), livStatus=$("#livStatus");
-$("#addLiv").onclick = ()=>{
+todoList.addEventListener("click",(e)=>{
+  const btn = e.target.closest("button"); if(!btn) return;
+  const li = e.target.closest(".item"); const id = li.dataset.id;
+  const idx = state.todos.findIndex(x=>x.id===id); if(idx<0) return;
+  const a = btn.dataset.act;
+  if(a==="del"){ state.todos.splice(idx,1); }
+  if(a==="toggle"){ state.todos[idx].done = !state.todos[idx].done; }
+  if(a==="edit"){
+    const t = state.todos[idx];
+    const nt = prompt("Titre", t.title); if(nt===null) return;
+    const nd = prompt("Échéance (YYYY-MM-DD)", t.due); if(nd===null) return;
+    const np = prompt("Priorité (basse, normale, haute)", t.prio); if(np===null) return;
+    const ncol = prompt("Colonne (backlog, doing, done)", t.col); if(ncol===null) return;
+    const ntags = prompt("Tags (séparés par des virgules)", t.tags||""); if(ntags===null) return;
+    const nnotes = prompt("Notes", t.notes||""); if(nnotes===null) return;
+    Object.assign(t,{title:nt.trim(), due:nd.trim(), prio:np.trim()||"normal", col:ncol.trim()||"backlog", tags:ntags.trim(), notes:nnotes.trim()});
+  }
+  save(); renderTodos(); renderKanban();
+});
+$("#clearDone").onclick = ()=>{ state.todos = state.todos.filter(t=>!t.done); save(); renderTodos(); renderKanban(); };
+todoFilter.addEventListener("input", renderTodos);
+
+/* Drag to reorder in list */
+let dragId=null;
+todoList.addEventListener("dragstart",(e)=>{
+  const li = e.target.closest(".item"); if(!li) return;
+  dragId = li.dataset.id;
+  e.dataTransfer.effectAllowed="move";
+});
+todoList.addEventListener("dragover",(e)=>{ e.preventDefault(); });
+todoList.addEventListener("drop",(e)=>{
+  e.preventDefault();
+  const li = e.target.closest(".item"); const toId = li? li.dataset.id : null;
+  if(!dragId || !toId || dragId===toId) return;
+  const from = state.todos.findIndex(t=>t.id===dragId);
+  const to = state.todos.findIndex(t=>t.id===toId);
+  const [moved] = state.todos.splice(from,1);
+  state.todos.splice(to,0,moved);
+  dragId = null; save(); renderTodos();
+});
+
+/* Kanban */
+const kanban = {
+  backlog: document.querySelector(".droppable[data-col='backlog']"),
+  doing: document.querySelector(".droppable[data-col='doing']"),
+  done: document.querySelector(".droppable[data-col='done']"),
+};
+function renderKanban(){
+  Object.values(kanban).forEach(el=>el.innerHTML="");
+  let c = {backlog:0, doing:0, done:0};
+  state.todos.forEach(t=>{
+    const card = document.createElement("div");
+    card.className="card"; card.draggable=true; card.dataset.id=t.id;
+    card.innerHTML = `<strong>${t.title}</strong><div class="meta">${t.due||"—"} · ${t.prio}${t.tags? " · "+t.tags:""}</div>`;
+    card.addEventListener("dragstart",(e)=>{ dragId = t.id; });
+    (kanban[t.col]||kanban.backlog).appendChild(card);
+    c[t.col] = (c[t.col]||0)+1;
+  });
+  document.getElementById("cBacklog").textContent = c.backlog||0;
+  document.getElementById("cDoing").textContent = c.doing||0;
+  document.getElementById("cDone").textContent = c.done||0;
+}
+renderKanban();
+document.querySelectorAll(".droppable").forEach(zone=>{
+  zone.addEventListener("dragover",(e)=>{ e.preventDefault(); zone.style.outline="2px dashed var(--brand)"; });
+  zone.addEventListener("dragleave",()=>{ zone.style.outline="none"; });
+  zone.addEventListener("drop",(e)=>{
+    e.preventDefault(); zone.style.outline="none";
+    if(!dragId) return;
+    const idx = state.todos.findIndex(t=>t.id===dragId); if(idx<0) return;
+    state.todos[idx].col = zone.dataset.col; save(); renderKanban(); renderTodos();
+    dragId = null;
+  });
+});
+document.getElementById("viewList").onclick = ()=>{ document.getElementById("todoView").hidden=false; document.getElementById("kanbanView").hidden=true; };
+document.getElementById("viewKanban").onclick = ()=>{ document.getElementById("todoView").hidden=true; document.getElementById("kanbanView").hidden=false; };
+
+/* ===== Livrables ===== */
+const livList=document.getElementById("livList"), livName=document.getElementById("livName"), livUrl=document.getElementById("livUrl"), livStatus=document.getElementById("livStatus"), livDate=document.getElementById("livDate"), livFilter=document.getElementById("livFilter");
+function renderLiv(){
+  const q = (livFilter.value||"").toLowerCase();
+  livList.innerHTML = state.livrables.map(l=>`
+    <li class="item" data-id="${l.id}" ${q && !JSON.stringify(l).toLowerCase().includes(q)?'hidden':''}>
+      <div style="flex:1">
+        <div class="row"><strong>${l.name}</strong> <span class="badge">${l.status||"—"}</span></div>
+        <div class="meta">${l.date||"—"}</div>
+        ${l.url?`<div><a href="${l.url}" target="_blank" rel="noopener">Ouvrir</a></div>`:""}
+      </div>
+      <div class="actions">
+        <button class="secondary" data-act="edit">✏️</button>
+        <button data-act="del">🗑️</button>
+      </div>
+    </li>
+  `).join("");
+}
+renderLiv();
+document.getElementById("addLiv").onclick = ()=>{
   if(!livName.value.trim()) return alert("Nom requis");
-  state.livrables.unshift({id:uid(), name:livName.value.trim(), url:livUrl.value.trim(), date:livDate.value||"", status:livStatus.value});
+  state.livrables.unshift({id:uid(), name:livName.value.trim(), url:livUrl.value.trim(), status:livStatus.value, date:livDate.value||""});
   save(); renderLiv();
   livName.value=""; livUrl.value=""; livDate.value=""; livStatus.value="en cours";
 };
-function renderLiv(){
-  const list = $("#livList");
-  list.innerHTML = state.livrables.map(l=>`
-    <li class="item">
-      <div style="flex:1">
-        <div class="row"><strong>${l.name}</strong>${l.status?`<span class="pill">${l.status}</span>`:""}</div>
-        ${l.date?`<div class="muted">Date : ${l.date}</div>`:""}
-        ${l.url?`<div><a href="${l.url}" target="_blank" rel="noopener">Ouvrir le lien</a></div>`:""}
-      </div>
-      <div class="actions">
-        <button class="secondary" data-action="edit" data-id="${l.id}">✏️</button>
-        <button data-action="del" data-id="${l.id}">🗑️</button>
-      </div>
-    </li>`).join("");
-  list.onclick = (e)=>{
-    const btn = e.target.closest("button"); if(!btn) return;
-    const id = btn.dataset.id, action = btn.dataset.action;
-    const idx = state.livrables.findIndex(x=>x.id===id);
-    if(idx<0) return;
-    if(action==="del"){ state.livrables.splice(idx,1); }
-    if(action==="edit"){
-      const it = state.livrables[idx];
-      const nn = prompt("Nom", it.name); if(nn===null) return;
-      const nu = prompt("URL", it.url); if(nu===null) return;
-      const nd = prompt("Date (YYYY-MM-DD)", it.date); if(nd===null) return;
-      const ns = prompt("Statut (en cours, à valider, livré)", it.status); if(ns===null) return;
-      Object.assign(it,{name:nn.trim(), url:nu.trim(), date:nd.trim(), status:ns.trim()});
-    }
-    save(); renderLiv();
-  };
-}
-renderLiv();
-
-/* === Dossiers === */
-const dosName=$("#dosName"), dosUrl=$("#dosUrl");
-$("#addDos").onclick = ()=>{
-  if(!dosName.value.trim()) return alert("Intitulé requis");
-  state.dossiers.unshift({id:uid(), name:dosName.value.trim(), url:dosUrl.value.trim()});
-  save(); renderDos();
-  dosName.value=""; dosUrl.value="";
+document.getElementById("addQuickLiv").onclick = ()=>{
+  const n = prompt("Nom du livrable", "Maquette V1"); if(!n) return;
+  const u = prompt("URL (optionnel)", ""); 
+  state.livrables.unshift({id:uid(), name:n.trim(), url:(u||"").trim(), status:"à valider", date:""});
+  save(); renderLiv();
 };
+livFilter.addEventListener("input", renderLiv);
+livList.addEventListener("click",(e)=>{
+  const btn = e.target.closest("button"); if(!btn) return;
+  const li = e.target.closest(".item"); const id = li.dataset.id;
+  const idx = state.livrables.findIndex(x=>x.id===id); if(idx<0) return;
+  const a = btn.dataset.act;
+  if(a==="del"){ state.livrables.splice(idx,1); }
+  if(a==="edit"){
+    const it = state.livrables[idx];
+    const nn = prompt("Nom", it.name); if(nn===null) return;
+    const nu = prompt("URL", it.url); if(nu===null) return;
+    const nd = prompt("Date (YYYY-MM-DD)", it.date); if(nd===null) return;
+    const ns = prompt("Statut (en cours, à valider, livré)", it.status); if(ns===null) return;
+    Object.assign(it,{name:nn.trim(), url:nu.trim(), date:nd.trim(), status:ns.trim()});
+  }
+  save(); renderLiv();
+});
+
+/* ===== Dossiers ===== */
+const dosList=document.getElementById("dosList"), dosName=document.getElementById("dosName"), dosUrl=document.getElementById("dosUrl"), dosFilter=document.getElementById("dosFilter");
 function renderDos(){
-  const list = $("#dosList");
-  list.innerHTML = state.dossiers.map(d=>`
-    <li class="item">
+  const q = (dosFilter.value||"").toLowerCase();
+  dosList.innerHTML = state.dossiers.map(d=>`
+    <li class="item" data-id="${d.id}" ${q && !JSON.stringify(d).toLowerCase().includes(q)?'hidden':''}>
       <div style="flex:1">
         <strong>${d.name}</strong>
         ${d.url?`<div><a href="${d.url}" target="_blank" rel="noopener">Ouvrir</a></div>`:""}
       </div>
       <div class="actions">
-        <button class="secondary" data-action="edit" data-id="${d.id}">✏️</button>
-        <button data-action="del" data-id="${d.id}">🗑️</button>
+        <button class="secondary" data-act="edit">✏️</button>
+        <button data-act="del">🗑️</button>
       </div>
-    </li>`).join("");
-  list.onclick = (e)=>{
-    const btn = e.target.closest("button"); if(!btn) return;
-    const id = btn.dataset.id, action = btn.dataset.action;
-    const idx = state.dossiers.findIndex(x=>x.id===id);
-    if(idx<0) return;
-    if(action==="del"){ state.dossiers.splice(idx,1); }
-    if(action==="edit"){
-      const it = state.dossiers[idx];
-      const nn = prompt("Nom", it.name); if(nn===null) return;
-      const nu = prompt("URL", it.url); if(nu===null) return;
-      Object.assign(it,{name:nn.trim(), url:nu.trim()});
-    }
-    save(); renderDos();
-  };
+    </li>
+  `).join("");
 }
 renderDos();
+document.getElementById("addDos").onclick = ()=>{
+  if(!dosName.value.trim()) return alert("Nom requis");
+  state.dossiers.unshift({id:uid(), name:dosName.value.trim(), url:dosUrl.value.trim()});
+  save(); renderDos();
+  dosName.value=""; dosUrl.value="";
+};
+document.getElementById("addQuickDos").onclick = ()=>{
+  const n = prompt("Nom du dossier", "Client ACME"); if(!n) return;
+  const u = prompt("URL", ""); state.dossiers.unshift({id:uid(), name:n.trim(), url:(u||"").trim()}); save(); renderDos();
+};
+dosFilter.addEventListener("input", renderDos);
+dosList.addEventListener("click",(e)=>{
+  const btn = e.target.closest("button"); if(!btn) return;
+  const li = e.target.closest(".item"); const id = li.dataset.id;
+  const idx = state.dossiers.findIndex(x=>x.id===id); if(idx<0) return;
+  const a = btn.dataset.act;
+  if(a==="del"){ state.dossiers.splice(idx,1); }
+  if(a==="edit"){
+    const it = state.dossiers[idx];
+    const nn = prompt("Nom", it.name); if(nn===null) return;
+    const nu = prompt("URL", it.url); if(nu===null) return;
+    Object.assign(it,{name:nn.trim(), url:nu.trim()});
+  }
+  save(); renderDos();
+});
 
-/* === Agenda & calendrier === */
-let view = new Date(); // current month view
+/* ===== Agenda ===== */
+let view = new Date();
+function pad(n){ return String(n).padStart(2,"0"); }
 function renderCalendar(){
-  const cal = $("#calendar"); const label = $("#calLabel");
+  const cal = document.getElementById("calendar"); const label = document.getElementById("calLabel");
   const y = view.getFullYear(), m = view.getMonth();
   label.textContent = new Date(y,m,1).toLocaleDateString(undefined,{month:"long", year:"numeric"});
   cal.innerHTML = "";
   const first = new Date(y,m,1);
-  const start = (first.getDay() + 6) % 7; // Monday=0
-  const days = new Date(y, m+1, 0).getDate();
-  // fill previous blanks
-  for(let i=0;i<start;i++){ cal.appendChild(blank()); }
+  const start = (first.getDay()+6)%7; // Monday=0
+  const days = new Date(y,m+1,0).getDate();
+  for(let i=0;i<start;i++) cal.appendChild(blankDay());
+  const todayStr = new Date().toISOString().slice(0,10);
   for(let d=1; d<=days; d++){
-    const cell = document.createElement("div"); cell.className="day";
-    const dateStr = `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const dateStr = y+"-"+pad(m+1)+"-"+pad(d);
+    const cell = document.createElement("div"); cell.className="day"+(dateStr===todayStr?" today":"");
     const head = document.createElement("header");
-    const h = document.createElement("div"); h.textContent = d;
-    const add = document.createElement("button"); add.textContent = "+"; add.className="secondary"; add.style.padding="2px 6px";
-    add.onclick = ()=>quickAdd(dateStr);
-    head.append(h, add);
-    cell.appendChild(head);
+    const num = document.createElement("div"); num.textContent = d;
+    const plus = document.createElement("button"); plus.textContent = "+"; plus.className="secondary"; plus.style.padding="2px 6px";
+    plus.onclick = ()=>quickAdd(dateStr);
+    head.append(num, plus); cell.appendChild(head);
     // events
     state.events.filter(e=>e.date===dateStr).forEach(ev=>{
-      const tag = document.createElement("div"); tag.className="tag";
-      tag.textContent = ev.time ? `${ev.time} — ${ev.title}` : ev.title;
-      tag.title = ev.notes || "";
-      tag.onclick = ()=>editEvent(ev.id);
-      cell.appendChild(tag);
+      const evEl = document.createElement("div"); evEl.className="event"; evEl.title = ev.notes||"";
+      evEl.innerHTML = (ev.time?ev.time+" — ":"")+ev.title;
+      evEl.onclick = ()=>editEvent(ev.id);
+      cell.appendChild(evEl);
     });
     cal.appendChild(cell);
   }
 }
-function blank(){ const d = document.createElement("div"); d.className="day"; return d; }
-$("#prevMonth").onclick = ()=>{ view.setMonth(view.getMonth()-1); renderCalendar(); };
-$("#nextMonth").onclick = ()=>{ view.setMonth(view.getMonth()+1); renderCalendar(); };
+function blankDay(){const d=document.createElement("div"); d.className="day"; return d;}
+document.getElementById("prevMonth").onclick=()=>{ view.setMonth(view.getMonth()-1); renderCalendar(); };
+document.getElementById("nextMonth").onclick=()=>{ view.setMonth(view.getMonth()+1); renderCalendar(); };
 
-const evTitle=$("#evTitle"), evDate=$("#evDate"), evTime=$("#evTime"), evDur=$("#evDur"), evNotes=$("#evNotes");
-$("#addEvent").onclick = ()=>{
-  if(!evTitle.value.trim()) return alert("Titre requis");
-  if(!evDate.value) return alert("Date requise");
+const evTitle=document.getElementById("evTitle"), evDate=document.getElementById("evDate"), evTime=document.getElementById("evTime"), evDur=document.getElementById("evDur"), evNotes=document.getElementById("evNotes");
+document.getElementById("addEvent").onclick = ()=>{
+  if(!evTitle.value.trim()||!evDate.value) return alert("Titre et date requis");
   state.events.push({id:uid(), title:evTitle.value.trim(), date:evDate.value, time:evTime.value, dur:parseInt(evDur.value||"60",10), notes:evNotes.value.trim()});
   save(); renderCalendar();
   evTitle.value=""; evNotes.value="";
 };
-
 function quickAdd(dateStr){
-  const title = prompt("Titre de l'événement", "Rendez-vous");
-  if(!title) return;
-  state.events.push({id:uid(), title, date:dateStr, time:"09:00", dur:60, notes:""});
+  const title = prompt("Titre", "Rendez-vous"); if(!title) return;
+  state.events.push({id:uid(), title:title.trim(), date:dateStr, time:"09:00", dur:60, notes:""});
   save(); renderCalendar();
 }
 function editEvent(id){
@@ -431,49 +641,18 @@ function editEvent(id){
   save(); renderCalendar();
 }
 
-/* === Export JSON / Import === */
-$("#exportJSON").onclick = ()=>{
-  const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "v2x_compte_client.json";
-  document.body.appendChild(a); a.click(); a.remove();
-};
-$("#importFile").addEventListener("change", async (e)=>{
-  const file = e.target.files[0]; if(!file) return;
-  const text = await file.text();
-  try{
-    const data = JSON.parse(text);
-    if(!data.todos || !data.livrables || !data.dossiers || !data.events) throw new Error("Format inattendu");
-    state = data; save(); // overwrite
-    // re-render everything
-    proEmail.value = state.email || "";
-    renderTodos(); renderLiv(); renderDos(); renderCalendar();
-    alert("Import réussi");
-  }catch(err){ alert("Échec import: "+err.message); }
-});
-
-/* === Export ICS (Agenda) === */
-function pad(n){ return String(n).padStart(2,"0"); }
+/* Export ICS */
 function dtToICS(dateStr, timeStr){
-  // dateStr: YYYY-MM-DD, timeStr: HH:MM
   const [y,m,d] = dateStr.split("-").map(Number);
   const [hh,mm] = (timeStr||"09:00").split(":").map(Number);
-  const dt = new Date(y, m-1, d, hh, mm, 0);
-  const yyyy = dt.getFullYear(); const MM = pad(dt.getMonth()+1); const DD = pad(dt.getDate());
-  const HH = pad(dt.getHours()); const MMm = pad(dt.getMinutes());
-  return `${yyyy}${MM}${DD}T${HH}${MMm}00`;
+  return `${y}${pad(m)}${pad(d)}T${pad(hh)}${pad(mm)}00`;
 }
-$("#exportICS").onclick = ()=>{
-  const lines = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//V2X//Compte Client//FR"
-  ];
+document.getElementById("exportICS").onclick = ()=>{
+  const lines = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//V2X//Compte Client PRO//FR"];
   state.events.forEach(ev=>{
-    const dtStart = dtToICS(ev.date, ev.time||"09:00");
-    const durMin = parseInt(ev.dur||"60",10);
-    const end = new Date(new Date(ev.date+"T"+(ev.time||"09:00")+":00").getTime() + durMin*60000);
+    const start = new Date(ev.date+"T"+(ev.time||"09:00")+":00");
+    const end = new Date(start.getTime() + (parseInt(ev.dur||"60",10)*60000));
+    const dtStart = `${start.getFullYear()}${pad(start.getMonth()+1)}${pad(start.getDate())}T${pad(start.getHours())}${pad(start.getMinutes())}00`;
     const dtEnd = `${end.getFullYear()}${pad(end.getMonth()+1)}${pad(end.getDate())}T${pad(end.getHours())}${pad(end.getMinutes())}00`;
     lines.push("BEGIN:VEVENT");
     lines.push("UID:"+ev.id+"@v2x");
@@ -485,14 +664,56 @@ $("#exportICS").onclick = ()=>{
   });
   lines.push("END:VCALENDAR");
   const blob = new Blob([lines.join("\r\n")], {type:"text/calendar"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "v2x_agenda.ics";
-  document.body.appendChild(a); a.click(); a.remove();
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "v2x_agenda.ics"; a.click();
 };
 
-/* init */
-refreshKPIs();
+/* ===== Export / Import ===== */
+document.getElementById("exportJSON").onclick = ()=>{
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download="v2x_compte_client_pro.json"; a.click();
+};
+document.getElementById("importFile").addEventListener("change", async (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  try{
+    const text = await f.text(); const data = JSON.parse(text);
+    if(!data.todos || !data.livrables || !data.dossiers || !data.events) throw new Error("Format inattendu");
+    state = data; emailInput.value = state.email||""; userEmail.textContent = state.email||"—";
+    save(); renderTodos(); renderKanban(); renderLiv(); renderDos(); renderCalendar();
+    alert("Import réussi");
+  }catch(err){ alert("Échec import: "+err.message); }
+});
+
+/* ===== Command palette (Ctrl/Cmd+K) ===== */
+const cmd = document.getElementById("cmd"), cmdInput=document.getElementById("cmdInput"), cmdList=document.getElementById("cmdList");
+const commands = [
+  {k:"aller: tâches", run:()=>document.getElementById("todoTitle").scrollIntoView({behavior:'smooth'})},
+  {k:"aller: agenda", run:()=>document.getElementById("evTitle").scrollIntoView({behavior:'smooth'})},
+  {k:"aller: livrables", run:()=>document.getElementById("livName").scrollIntoView({behavior:'smooth'})},
+  {k:"aller: dossiers", run:()=>document.getElementById("dosName").scrollIntoView({behavior:'smooth'})},
+  {k:"ajouter tâche", run:()=>document.getElementById("todoTitle").focus()},
+  {k:"ajouter événement", run:()=>document.getElementById("evTitle").focus()},
+  {k:"export json", run:()=>document.getElementById("exportJSON").click()},
+  {k:"export ics", run:()=>document.getElementById("exportICS").click()},
+];
+function openCmd(){ cmd.showModal(); cmdInput.value=""; renderCmds(""); setTimeout(()=>cmdInput.focus(), 50); }
+function closeCmd(){ cmd.close(); }
+function renderCmds(q){ 
+  const res = commands.filter(c=>c.k.includes(q.toLowerCase()));
+  cmdList.innerHTML = res.map(c=>`<div class="cmd" data-k="${c.k}">${c.k}</div>`).join("") || "<div class='muted'>Aucune commande…</div>";
+}
+document.getElementById("openCmd").onclick=openCmd; document.getElementById("closeCmd").onclick=closeCmd;
+cmdInput.addEventListener("input", ()=>renderCmds(cmdInput.value));
+cmdList.addEventListener("click",(e)=>{
+  const el = e.target.closest(".cmd"); if(!el) return; const c = commands.find(x=>x.k===el.dataset.k); if(c){ c.run(); closeCmd(); }
+});
+document.addEventListener("keydown",(e)=>{
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==="k"){ e.preventDefault(); openCmd(); }
+});
+
+/* ===== Keyboard shortcuts ===== */
+globalSearch.addEventListener("keydown",(e)=>{ if(e.key==="Enter"){ document.querySelector("input, textarea, select, button").focus(); }});
+
+/* ===== Initial renders ===== */
 renderCalendar();
 </script>
 </body>
