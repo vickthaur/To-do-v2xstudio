@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V2X — Compte Client (To-do, Livrables, Dossiers, Agenda)</title>
+<meta name="theme-color" content="#0a4466">
+<style>
+  /* ===== Design system inspiré de V2X (dark + bleu) ===== */
+  :root{
+    --bg:#0b0c0f;
+    --ink:#f2f6fe;
+    --muted:#9fb0c6;
+    --panel:#0f1420;
+    --bd:#1b2434;
+    --brand:#0a4466;
+    --brand-2:#136e99;
+    --r:16px;
+    --shadow:0 20px 60px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,Inter,Segoe UI,Arial,sans-serif}
+  a{color:#b9ddff}
+  .wrap{max-width:1100px;margin:0 auto;padding:22px}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .brand{font-weight:700;letter-spacing:.3px}
+  .muted{color:var(--muted)}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  .tab{background:#0f1624;border:1px solid var(--bd);padding:8px 12px;border-radius:10px;cursor:pointer}
+  .tab[aria-selected="true"]{outline:2px solid var(--brand)}
+  .panel{background:var(--panel);border:1px solid var(--bd);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  input[type="text"], input[type="url"], input[type="date"], input[type="time"], textarea, select{
+    width:100%;padding:10px 12px;background:#0c121b;border:1px solid var(--bd);border-radius:10px;color:var(--ink)
+  }
+  button, .btn{
+    background:var(--brand);color:#fff;border:none;border-radius:10px;padding:9px 12px;cursor:pointer
+  }
+  button.secondary{background:#0f1624;color:var(--ink);border:1px solid var(--bd)}
+  .list{list-style:none;margin:0;padding:0}
+  .item{display:flex;align-items:center;justify-content:space-between;border-bottom:1px dashed var(--bd);padding:8px 0;gap:8px}
+  .actions{display:flex;gap:6px;align-items:center}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .kpi{background:#0f1420;border:1px solid var(--bd);border-radius:12px;padding:10px;text-align:center}
+  .kpi h3{margin:0}
+  .pill{border:1px solid var(--bd);border-radius:999px;padding:2px 8px;font-size:12px;color:var(--muted)}
+  .row{display:flex;gap:10px;align-items:center}
+  .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px}
+  .cal-head{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+  .day{background:#0f1624;border:1px solid var(--bd);border-radius:10px;min-height:90px;padding:6px;display:flex;flex-direction:column;gap:4px}
+  .day header{display:flex;justify-content:space-between;align-items:center;margin:0 0 4px 0}
+  .tag{display:inline-block;background:rgba(10,68,102,.25);border:1px solid var(--brand);border-radius:8px;padding:2px 6px;font-size:12px}
+  .toolbar{display:flex;gap:6px;flex-wrap:wrap}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+  .notice{padding:10px;border:1px solid var(--bd);background:#0f1624;border-radius:10px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">V2X — Compte Client</div>
+      <div class="row">
+        <label class="sr-only" for="proEmail">Email pro</label>
+        <input id="proEmail" type="text" placeholder="email pro (ex: contact@tondomaine.fr)" style="max-width:280px">
+        <button id="saveEmail" class="secondary">Enregistrer</button>
+        <button id="mailtoBtn" title="Écrire un email">✉️</button>
+      </div>
+    </header>
+
+    <div class="kpis">
+      <div class="kpi"><h3 id="kTodo">0</h3><p class="muted">Tâches</p></div>
+      <div class="kpi"><h3 id="kDue">0</h3><p class="muted">Échéances à venir</p></div>
+      <div class="kpi"><h3 id="kFiles">0</h3><p class="muted">Dossiers / Liens</p></div>
+      <div class="kpi"><h3 id="kEvents">0</h3><p class="muted">Événements</p></div>
+    </div>
+
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" aria-controls="todo" aria-selected="true">✅ To‑do</button>
+      <button class="tab" role="tab" aria-controls="livrables">📦 Livrables</button>
+      <button class="tab" role="tab" aria-controls="dossiers">🗂️ Dossiers</button>
+      <button class="tab" role="tab" aria-controls="agenda">📅 Agenda</button>
+      <button class="tab" role="tab" aria-controls="export">⬇️ Export / ⬆️ Import</button>
+      <span class="pill">Sauvegarde auto</span>
+    </nav>
+
+    <!-- To-do -->
+    <section id="todo" role="tabpanel" class="panel">
+      <div class="grid">
+        <div>
+          <h2>Ajouter une tâche</h2>
+          <label>Titre<input id="todoTitle" type="text" placeholder="Ex: Créer la page d'accueil"></label>
+          <div class="grid" style="grid-template-columns:1fr 1fr">
+            <label>Échéance<input id="todoDate" type="date"></label>
+            <label>Priorité
+              <select id="todoPrio">
+                <option value="normal">Normale</option>
+                <option value="haute">Haute</option>
+                <option value="basse">Basse</option>
+              </select>
+            </label>
+          </div>
+          <label>Notes<textarea id="todoNotes" rows="3" placeholder="Détails, points bloquants…"></textarea></label>
+          <button id="addTodo">Ajouter</button>
+        </div>
+        <div>
+          <h2>Liste des tâches</h2>
+          <ul id="todoList" class="list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Livrables -->
+    <section id="livrables" role="tabpanel" class="panel" hidden>
+      <div class="grid">
+        <div>
+          <h2>Nouveau livrable</h2>
+          <label>Nom<input id="livName" type="text" placeholder="Ex: Maquette Figma v1"></label>
+          <label>Lien (Drive, Figma, GitHub…)<input id="livUrl" type="url" placeholder="https://..."></label>
+          <div class="grid" style="grid-template-columns:1fr 1fr">
+            <label>Date dispo<input id="livDate" type="date"></label>
+            <label>Statut
+              <select id="livStatus">
+                <option value="en cours">En cours</option>
+                <option value="à valider">À valider</option>
+                <option value="livré">Livré</option>
+              </select>
+            </label>
+          </div>
+          <button id="addLiv">Ajouter</button>
+        </div>
+        <div>
+          <h2>Livrables</h2>
+          <ul id="livList" class="list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dossiers -->
+    <section id="dossiers" role="tabpanel" class="panel" hidden>
+      <div class="grid">
+        <div>
+          <h2>Ajouter un dossier</h2>
+          <label>Intitulé<input id="dosName" type="text" placeholder="Ex: Dossier client ACME"></label>
+          <label>URL dossier (Drive/Notion/GitHub…)<input id="dosUrl" type="url" placeholder="https://..."></label>
+          <button id="addDos">Ajouter</button>
+        </div>
+        <div>
+          <h2>Mes dossiers</h2>
+          <ul id="dosList" class="list"></ul>
+        </div>
+      </div>
+      <p class="notice">Astuce : crée un dossier Drive par client et colle ici le lien. Tout est consultable depuis un seul endroit.</p>
+    </section>
+
+    <!-- Agenda -->
+    <section id="agenda" role="tabpanel" class="panel" hidden>
+      <div class="grid">
+        <div>
+          <h2>Nouvel événement</h2>
+          <label>Titre<input id="evTitle" type="text" placeholder="Ex: Call projet"></label>
+          <div class="grid" style="grid-template-columns:1fr 1fr">
+            <label>Date<input id="evDate" type="date"></label>
+            <label>Heure<input id="evTime" type="time" value="09:00"></label>
+          </div>
+          <label>Durée (min)<input id="evDur" type="number" min="15" step="15" value="60"></label>
+          <label>Notes<textarea id="evNotes" rows="3" placeholder="Participants, lien Meet…"></textarea></label>
+          <button id="addEvent">Ajouter</button>
+          <div class="row" style="margin-top:10px">
+            <button class="secondary" id="exportICS">Exporter .ics</button>
+          </div>
+        </div>
+        <div>
+          <div class="toolbar">
+            <button id="prevMonth" class="secondary">◀</button>
+            <strong id="calLabel"></strong>
+            <button id="nextMonth" class="secondary">▶</button>
+          </div>
+          <div class="cal-head muted">
+            <div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div>
+          </div>
+          <div id="calendar" class="calendar"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Export / Import -->
+    <section id="export" role="tabpanel" class="panel" hidden>
+      <h2>Export / Import des données</h2>
+      <p class="muted">Tout est enregistré automatiquement dans ton navigateur (localStorage). Tu peux aussi exporter en JSON et ré-importer plus tard, ou sur un autre ordinateur.</p>
+      <div class="row">
+        <button id="exportJSON">Exporter JSON</button>
+        <input id="importFile" type="file" accept="application/json">
+      </div>
+      <p class="muted">Remarque : la connexion directe à ta boîte mail pro nécessite un back-end (OAuth Gmail/Outlook). Cette version locale fournit un bouton ✉️ pour composer un email rapide à l’adresse enregistrée.</p>
+    </section>
+
+  </div>
+
+<script>
+/* === Modèle de données ===
+state = {
+  email: "pro@domaine.fr",
+  todos:[{title, due, prio, notes, done, id}],
+  livrables:[{name, url, date, status, id}],
+  dossiers:[{name, url, id}],
+  events:[{title, date, time, dur, notes, id}]
+}
+*/
+const KEY = "v2x_compte_client";
+const $ = (s, el=document)=>el.querySelector(s);
+const $$ = (s, el=document)=>Array.from(el.querySelectorAll(s));
+let state = load() || {email:"", todos:[], livrables:[], dossiers:[], events:[]};
+
+function save(){ localStorage.setItem(KEY, JSON.stringify(state)); refreshKPIs(); }
+function load(){ try{return JSON.parse(localStorage.getItem(KEY)||"");}catch(e){return null;} }
+function uid(){ return Math.random().toString(36).slice(2,9); }
+function refreshKPIs(){
+  $("#kTodo").textContent = state.todos.length;
+  const dueSoon = state.todos.filter(t=>t.due && new Date(t.due) >= new Date()).length;
+  $("#kDue").textContent = dueSoon;
+  $("#kFiles").textContent = state.dossiers.length;
+  $("#kEvents").textContent = state.events.length;
+}
+
+/* === Tabs === */
+const tabs = $$(".tab");
+const panels = ["todo","livrables","dossiers","agenda","export"];
+tabs.forEach((t,i)=>{
+  t.addEventListener("click", ()=>{
+    tabs.forEach(btn=>btn.setAttribute("aria-selected","false"));
+    t.setAttribute("aria-selected","true");
+    panels.forEach(id=>$("#"+id).hidden = true);
+    $("#"+t.getAttribute("aria-controls")).hidden = false;
+  });
+});
+
+/* === Email / mailto === */
+const proEmail = $("#proEmail");
+const saveEmail = $("#saveEmail");
+const mailtoBtn = $("#mailtoBtn");
+proEmail.value = state.email || "";
+saveEmail.onclick = ()=>{ state.email = proEmail.value.trim(); save(); };
+mailtoBtn.onclick = ()=>{
+  const to = state.email || "";
+  const url = "mailto:"+encodeURIComponent(to)+"?subject="+encodeURIComponent("Suivi projet / V2X")+"&body="+encodeURIComponent("Bonjour,\n\n— Tâches en cours : "+state.todos.length+"\n— Prochains livrables : "+state.livrables.length+"\n— Événements : "+state.events.length+"\n\nCordialement,");
+  window.location.href = url;
+};
+
+/* === To-do === */
+const todoTitle = $("#todoTitle"), todoDate=$("#todoDate"), todoPrio=$("#todoPrio"), todoNotes=$("#todoNotes");
+$("#addTodo").onclick = ()=>{
+  if(!todoTitle.value.trim()) return alert("Titre requis");
+  state.todos.unshift({id:uid(), title:todoTitle.value.trim(), due:todoDate.value||"", prio:todoPrio.value, notes:todoNotes.value.trim(), done:false});
+  save(); renderTodos();
+  todoTitle.value=""; todoDate.value=""; todoPrio.value="normal"; todoNotes.value="";
+};
+function renderTodos(){
+  const list = $("#todoList");
+  list.innerHTML = state.todos.map(t=>`
+    <li class="item">
+      <div style="flex:1">
+        <div class="row"><strong>${t.title}</strong>${t.prio!=="normal"?`<span class="pill">${t.prio}</span>`:""}</div>
+        <div class="muted">${t.due?("Échéance : "+t.due):"Sans échéance"}</div>
+        ${t.notes?`<div class="muted">${t.notes}</div>`:""}
+      </div>
+      <div class="actions">
+        <button class="secondary" data-action="toggle" data-id="${t.id}">${t.done?"✅":"⏳"}</button>
+        <button class="secondary" data-action="edit" data-id="${t.id}">✏️</button>
+        <button data-action="del" data-id="${t.id}">🗑️</button>
+      </div>
+    </li>`).join("");
+  list.onclick = (e)=>{
+    const btn = e.target.closest("button"); if(!btn) return;
+    const id = btn.dataset.id, action = btn.dataset.action;
+    const idx = state.todos.findIndex(x=>x.id===id);
+    if(idx<0) return;
+    if(action==="del"){ state.todos.splice(idx,1); }
+    if(action==="toggle"){ state.todos[idx].done = !state.todos[idx].done; }
+    if(action==="edit"){
+      const t = state.todos[idx];
+      const nt = prompt("Modifier le titre", t.title); if(nt===null) return;
+      const nd = prompt("Modifier l'échéance (YYYY-MM-DD)", t.due); if(nd===null) return;
+      const nn = prompt("Modifier les notes", t.notes); if(nn===null) return;
+      t.title = nt.trim(); t.due = nd.trim(); t.notes = nn.trim();
+    }
+    save(); renderTodos();
+  };
+}
+renderTodos();
+
+/* === Livrables === */
+const livName=$("#livName"), livUrl=$("#livUrl"), livDate=$("#livDate"), livStatus=$("#livStatus");
+$("#addLiv").onclick = ()=>{
+  if(!livName.value.trim()) return alert("Nom requis");
+  state.livrables.unshift({id:uid(), name:livName.value.trim(), url:livUrl.value.trim(), date:livDate.value||"", status:livStatus.value});
+  save(); renderLiv();
+  livName.value=""; livUrl.value=""; livDate.value=""; livStatus.value="en cours";
+};
+function renderLiv(){
+  const list = $("#livList");
+  list.innerHTML = state.livrables.map(l=>`
+    <li class="item">
+      <div style="flex:1">
+        <div class="row"><strong>${l.name}</strong>${l.status?`<span class="pill">${l.status}</span>`:""}</div>
+        ${l.date?`<div class="muted">Date : ${l.date}</div>`:""}
+        ${l.url?`<div><a href="${l.url}" target="_blank" rel="noopener">Ouvrir le lien</a></div>`:""}
+      </div>
+      <div class="actions">
+        <button class="secondary" data-action="edit" data-id="${l.id}">✏️</button>
+        <button data-action="del" data-id="${l.id}">🗑️</button>
+      </div>
+    </li>`).join("");
+  list.onclick = (e)=>{
+    const btn = e.target.closest("button"); if(!btn) return;
+    const id = btn.dataset.id, action = btn.dataset.action;
+    const idx = state.livrables.findIndex(x=>x.id===id);
+    if(idx<0) return;
+    if(action==="del"){ state.livrables.splice(idx,1); }
+    if(action==="edit"){
+      const it = state.livrables[idx];
+      const nn = prompt("Nom", it.name); if(nn===null) return;
+      const nu = prompt("URL", it.url); if(nu===null) return;
+      const nd = prompt("Date (YYYY-MM-DD)", it.date); if(nd===null) return;
+      const ns = prompt("Statut (en cours, à valider, livré)", it.status); if(ns===null) return;
+      Object.assign(it,{name:nn.trim(), url:nu.trim(), date:nd.trim(), status:ns.trim()});
+    }
+    save(); renderLiv();
+  };
+}
+renderLiv();
+
+/* === Dossiers === */
+const dosName=$("#dosName"), dosUrl=$("#dosUrl");
+$("#addDos").onclick = ()=>{
+  if(!dosName.value.trim()) return alert("Intitulé requis");
+  state.dossiers.unshift({id:uid(), name:dosName.value.trim(), url:dosUrl.value.trim()});
+  save(); renderDos();
+  dosName.value=""; dosUrl.value="";
+};
+function renderDos(){
+  const list = $("#dosList");
+  list.innerHTML = state.dossiers.map(d=>`
+    <li class="item">
+      <div style="flex:1">
+        <strong>${d.name}</strong>
+        ${d.url?`<div><a href="${d.url}" target="_blank" rel="noopener">Ouvrir</a></div>`:""}
+      </div>
+      <div class="actions">
+        <button class="secondary" data-action="edit" data-id="${d.id}">✏️</button>
+        <button data-action="del" data-id="${d.id}">🗑️</button>
+      </div>
+    </li>`).join("");
+  list.onclick = (e)=>{
+    const btn = e.target.closest("button"); if(!btn) return;
+    const id = btn.dataset.id, action = btn.dataset.action;
+    const idx = state.dossiers.findIndex(x=>x.id===id);
+    if(idx<0) return;
+    if(action==="del"){ state.dossiers.splice(idx,1); }
+    if(action==="edit"){
+      const it = state.dossiers[idx];
+      const nn = prompt("Nom", it.name); if(nn===null) return;
+      const nu = prompt("URL", it.url); if(nu===null) return;
+      Object.assign(it,{name:nn.trim(), url:nu.trim()});
+    }
+    save(); renderDos();
+  };
+}
+renderDos();
+
+/* === Agenda & calendrier === */
+let view = new Date(); // current month view
+function renderCalendar(){
+  const cal = $("#calendar"); const label = $("#calLabel");
+  const y = view.getFullYear(), m = view.getMonth();
+  label.textContent = new Date(y,m,1).toLocaleDateString(undefined,{month:"long", year:"numeric"});
+  cal.innerHTML = "";
+  const first = new Date(y,m,1);
+  const start = (first.getDay() + 6) % 7; // Monday=0
+  const days = new Date(y, m+1, 0).getDate();
+  // fill previous blanks
+  for(let i=0;i<start;i++){ cal.appendChild(blank()); }
+  for(let d=1; d<=days; d++){
+    const cell = document.createElement("div"); cell.className="day";
+    const dateStr = `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const head = document.createElement("header");
+    const h = document.createElement("div"); h.textContent = d;
+    const add = document.createElement("button"); add.textContent = "+"; add.className="secondary"; add.style.padding="2px 6px";
+    add.onclick = ()=>quickAdd(dateStr);
+    head.append(h, add);
+    cell.appendChild(head);
+    // events
+    state.events.filter(e=>e.date===dateStr).forEach(ev=>{
+      const tag = document.createElement("div"); tag.className="tag";
+      tag.textContent = ev.time ? `${ev.time} — ${ev.title}` : ev.title;
+      tag.title = ev.notes || "";
+      tag.onclick = ()=>editEvent(ev.id);
+      cell.appendChild(tag);
+    });
+    cal.appendChild(cell);
+  }
+}
+function blank(){ const d = document.createElement("div"); d.className="day"; return d; }
+$("#prevMonth").onclick = ()=>{ view.setMonth(view.getMonth()-1); renderCalendar(); };
+$("#nextMonth").onclick = ()=>{ view.setMonth(view.getMonth()+1); renderCalendar(); };
+
+const evTitle=$("#evTitle"), evDate=$("#evDate"), evTime=$("#evTime"), evDur=$("#evDur"), evNotes=$("#evNotes");
+$("#addEvent").onclick = ()=>{
+  if(!evTitle.value.trim()) return alert("Titre requis");
+  if(!evDate.value) return alert("Date requise");
+  state.events.push({id:uid(), title:evTitle.value.trim(), date:evDate.value, time:evTime.value, dur:parseInt(evDur.value||"60",10), notes:evNotes.value.trim()});
+  save(); renderCalendar();
+  evTitle.value=""; evNotes.value="";
+};
+
+function quickAdd(dateStr){
+  const title = prompt("Titre de l'événement", "Rendez-vous");
+  if(!title) return;
+  state.events.push({id:uid(), title, date:dateStr, time:"09:00", dur:60, notes:""});
+  save(); renderCalendar();
+}
+function editEvent(id){
+  const i = state.events.findIndex(e=>e.id===id); if(i<0) return;
+  const ev = state.events[i];
+  const nt = prompt("Titre", ev.title); if(nt===null) return;
+  const nd = prompt("Date (YYYY-MM-DD)", ev.date); if(nd===null) return;
+  const ntm = prompt("Heure (HH:MM)", ev.time||"09:00"); if(ntm===null) return;
+  const ndu = prompt("Durée (min)", ev.dur); if(ndu===null) return;
+  const nn = prompt("Notes", ev.notes||""); if(nn===null) return;
+  Object.assign(ev,{title:nt.trim(), date:nd.trim(), time:ntm.trim(), dur:parseInt(ndu,10)||60, notes:nn.trim()});
+  save(); renderCalendar();
+}
+
+/* === Export JSON / Import === */
+$("#exportJSON").onclick = ()=>{
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "v2x_compte_client.json";
+  document.body.appendChild(a); a.click(); a.remove();
+};
+$("#importFile").addEventListener("change", async (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  const text = await file.text();
+  try{
+    const data = JSON.parse(text);
+    if(!data.todos || !data.livrables || !data.dossiers || !data.events) throw new Error("Format inattendu");
+    state = data; save(); // overwrite
+    // re-render everything
+    proEmail.value = state.email || "";
+    renderTodos(); renderLiv(); renderDos(); renderCalendar();
+    alert("Import réussi");
+  }catch(err){ alert("Échec import: "+err.message); }
+});
+
+/* === Export ICS (Agenda) === */
+function pad(n){ return String(n).padStart(2,"0"); }
+function dtToICS(dateStr, timeStr){
+  // dateStr: YYYY-MM-DD, timeStr: HH:MM
+  const [y,m,d] = dateStr.split("-").map(Number);
+  const [hh,mm] = (timeStr||"09:00").split(":").map(Number);
+  const dt = new Date(y, m-1, d, hh, mm, 0);
+  const yyyy = dt.getFullYear(); const MM = pad(dt.getMonth()+1); const DD = pad(dt.getDate());
+  const HH = pad(dt.getHours()); const MMm = pad(dt.getMinutes());
+  return `${yyyy}${MM}${DD}T${HH}${MMm}00`;
+}
+$("#exportICS").onclick = ()=>{
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//V2X//Compte Client//FR"
+  ];
+  state.events.forEach(ev=>{
+    const dtStart = dtToICS(ev.date, ev.time||"09:00");
+    const durMin = parseInt(ev.dur||"60",10);
+    const end = new Date(new Date(ev.date+"T"+(ev.time||"09:00")+":00").getTime() + durMin*60000);
+    const dtEnd = `${end.getFullYear()}${pad(end.getMonth()+1)}${pad(end.getDate())}T${pad(end.getHours())}${pad(end.getMinutes())}00`;
+    lines.push("BEGIN:VEVENT");
+    lines.push("UID:"+ev.id+"@v2x");
+    lines.push("DTSTART:"+dtStart);
+    lines.push("DTEND:"+dtEnd);
+    lines.push("SUMMARY:"+ev.title.replace(/\n/g," "));
+    if(ev.notes) lines.push("DESCRIPTION:"+ev.notes.replace(/\n/g," "));
+    lines.push("END:VEVENT");
+  });
+  lines.push("END:VCALENDAR");
+  const blob = new Blob([lines.join("\r\n")], {type:"text/calendar"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "v2x_agenda.ics";
+  document.body.appendChild(a); a.click(); a.remove();
+};
+
+/* init */
+refreshKPIs();
+renderCalendar();
+</script>
+</body>
+</html>
